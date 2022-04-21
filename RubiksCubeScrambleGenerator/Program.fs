@@ -68,10 +68,26 @@ module RubiksCubeScrambleGenerator =
         |> generateScramble'
         |> List.rev
 
+    let getScrambleCount (args: string[]) =
+        let scrambleCount =
+            match args.Length with
+            | 0 -> 1
+            | 1 ->
+                match System.Int32.TryParse args.[0] with
+                | true, value -> value
+                | _ -> raise <| System.ArgumentException("Invalid number passed as scramble count")
+            | _ -> raise <| System.ArgumentException("Invalid command line arguments. Proper usage: RubiksCubeScrambleGenerator [numberOfScrambles]")
+
+        scrambleCount
 
     [<EntryPoint>]
     let main args =
-        for turn in generateScramble() do
-            printf "%s " turn
+        let scrambleCount = getScrambleCount args
+
+        for i = 1 to scrambleCount do
+            for turn in generateScramble() do
+                printf "%s " turn
+
+            printfn ""
 
         0
