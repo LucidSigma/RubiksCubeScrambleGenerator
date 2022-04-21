@@ -14,6 +14,7 @@ module RubiksCubeScrambleGenerator =
 
     let randomEngine = new System.Random()
     let rng (maxInclusive: uint32) = uint32 (randomEngine.Next(1, int maxInclusive + 1))
+
     let randomCubeSide () = rng CubeSideCount
     let randomRotation () =
         let rotations = System.Enum.GetValues<RotationDirection>()
@@ -21,8 +22,7 @@ module RubiksCubeScrambleGenerator =
 
         rotations.[rotationIndex - 1]
 
-    let getCubeSideLetter side =
-        match side with
+    let getCubeSideLetter = function
         | 1u -> "U"
         | 2u -> "D"
         | 3u -> "R"
@@ -31,14 +31,17 @@ module RubiksCubeScrambleGenerator =
         | 6u -> "B"
         | _ -> raise <| System.ArgumentException("Invalid cube side number")
 
+    let getRotationSuffix = function
+        | RotationDirection.CounterClockwise -> "'"
+        | RotationDirection.Clockwise -> ""
+        | RotationDirection.HalfTurn -> "2"
+        | _ -> raise <| System.ArgumentException("Invalid rotation value")
+
     [<EntryPoint>]
     let main args =
-        let numbers = [for i in 1u..MovesPerScramble -> randomCubeSide()]
+        let turns = [for i in 1u..MovesPerScramble -> (randomCubeSide(), randomRotation())]
 
-        for value in [for i in 1u..MovesPerScramble -> randomRotation()] do
-            printf "%d " (int value) 
-
-        for number in numbers do
-            printf "%s " (getCubeSideLetter number)
+        for (cubeSide, rotation) in turns do
+            printf "%s%s " (getCubeSideLetter cubeSide) (getRotationSuffix rotation)
 
         0
