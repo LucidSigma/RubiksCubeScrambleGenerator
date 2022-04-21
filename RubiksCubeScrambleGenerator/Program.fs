@@ -37,11 +37,41 @@ module RubiksCubeScrambleGenerator =
         | RotationDirection.HalfTurn -> "2"
         | _ -> raise <| System.ArgumentException("Invalid rotation value")
 
+    let rec generateTurn = function
+        | Some (previousTurn: string) ->
+            let cubeSide = randomCubeSide()
+            let cubeSideLetter = getCubeSideLetter cubeSide
+
+            if cubeSideLetter.[0] = previousTurn.[0] then
+                generateTurn (Some previousTurn)
+            else
+                let rotation = randomRotation()
+                let rotationSuffix = getRotationSuffix rotation
+
+                cubeSideLetter + rotationSuffix
+        | None -> (getCubeSideLetter (randomCubeSide())) + (getRotationSuffix (randomRotation()))
+
+    let rec generateScramble () =
+        let rec generateScramble' (list: string list) =
+            if list.Length = 0 then
+                let firstTurn = generateTurn None
+
+                generateScramble' [firstTurn]
+            elif list.Length = (int MovesPerScramble) then
+                list
+            else
+                let newTurn = generateTurn (Some list.Head)
+
+                generateScramble' (newTurn :: list)
+
+        []
+        |> generateScramble'
+        |> List.rev
+
+
     [<EntryPoint>]
     let main args =
-        let turns = [for i in 1u..MovesPerScramble -> (randomCubeSide(), randomRotation())]
-
-        for (cubeSide, rotation) in turns do
-            printf "%s%s " (getCubeSideLetter cubeSide) (getRotationSuffix rotation)
+        for turn in generateScramble() do
+            printf "%s " turn
 
         0
