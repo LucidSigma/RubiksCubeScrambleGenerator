@@ -1,5 +1,5 @@
-# RubiksCubeScrambleGenerator
-A small console application that produces scrambles for a 3x3 Rubik's cube.
+# Rubik's Cube Scramble Generator
+A small F# console application that produces scrambles for a 3x3 Rubik's cube.
 
 ## Example usage
 ```
