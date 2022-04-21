@@ -82,12 +82,18 @@ module RubiksCubeScrambleGenerator =
 
     [<EntryPoint>]
     let main args =
-        let scrambleCount = getScrambleCount args
+        try
+            let scrambleCount = getScrambleCount args
 
-        for i = 1 to scrambleCount do
-            for turn in generateScramble() do
-                printf "%s " turn
+            for i = 1 to scrambleCount do
+                for turn in generateScramble() do
+                    printf "%s " turn
 
-            printfn ""
+                printfn ""
 
-        0
+            0
+        with
+            | :? System.ArgumentException as error ->
+                printfn "[ERROR]: %s" error.Message
+
+                1
